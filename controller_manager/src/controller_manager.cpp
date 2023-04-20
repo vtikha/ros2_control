@@ -60,7 +60,17 @@ inline bool is_controller_inactive(
 
 inline bool is_controller_active(const controller_interface::ControllerInterfaceBase & controller)
 {
-  return controller.get_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE;
+  bool is_active = false;
+  try
+  {
+    is_active = controller.get_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE;
+  }
+  catch (const std::exception & e)
+  {
+    is_active = is_controller_active(controller);
+  }
+
+  return is_active;
 }
 
 inline bool is_controller_active(

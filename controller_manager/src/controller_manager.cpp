@@ -2074,7 +2074,21 @@ void ControllerManager::controller_activity_diagnostic_callback(
     {
       all_active = false;
     }
-    stat.add(controllers[i].info.name, controllers[i].c->get_state().label());
+    std::string label = "";
+    while (!label.empty())
+    {
+      try
+      {
+        label = controllers[i].c->get_state().label();
+      }
+      catch (const std::exception & e)
+      {
+        std::cout << "\n\n\nWARNING: Controller failed to get state, but got caught!\n\n\n"
+                  << std::endl;
+      }
+    }
+
+    stat.add(controllers[i].info.name, label);
   }
 
   if (all_active)

@@ -451,7 +451,22 @@ controller_interface::return_type ControllerManager::configure_controller(
   }
   auto controller = found_it->c;
 
-  auto state = controller->get_state();
+  rclcpp_lifecycle::State state;
+  std::string label = "";
+  while (!label.empty())
+  {
+    try
+    {
+      state = controller->get_state();
+      label = state.label();
+    }
+    catch (const std::exception & e)
+    {
+      std::cout << "\n\n\nWARNING: Controller failed to get state, but got caught!\n\n\n"
+                << std::endl;
+    }
+  }
+
   if (
     state.id() == lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE ||
     state.id() == lifecycle_msgs::msg::State::PRIMARY_STATE_FINALIZED)
@@ -462,7 +477,22 @@ controller_interface::return_type ControllerManager::configure_controller(
     return controller_interface::return_type::ERROR;
   }
 
-  auto new_state = controller->get_state();
+  rclcpp_lifecycle::State new_state;
+  label = "";
+  while (!label.empty())
+  {
+    try
+    {
+      new_state = controller->get_state();
+      label = state.label();
+    }
+    catch (const std::exception & e)
+    {
+      std::cout << "\n\n\nWARNING: Controller failed to get state, but got caught!\n\n\n"
+                << std::endl;
+    }
+  }
+
   if (state.id() == lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE)
   {
     RCLCPP_DEBUG(
